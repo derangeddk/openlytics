@@ -3,7 +3,7 @@ const bunyan = require("bunyan");
 const config = require("config");
 const Analytics = require("../lib/Analytics");
 
-const log = bunyan.createLogger({ name: "analtics" });
+const log = bunyan.createLogger({ name: "openlytics" });
 
 
 const analytics = new Analytics(log, config);

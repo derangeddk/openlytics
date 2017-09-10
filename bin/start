@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+const bunyan = require("bunyan");
+const config = require("config");
+const Analytics = require("../lib/Analytics");
+
+const log = bunyan.createLogger({ name: "analtics" });
+
+
+const analytics = new Analytics(log, config);
+
+analytics.start((error) => {
+    if(error) throw error;
+    log.info("Analytics started");
+});

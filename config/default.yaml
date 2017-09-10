@@ -1,0 +1,4 @@
+port: 6080
+couchbase:
+    host: "localhost"
+    bucket: "analtics"

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf8">
+        <title>deranged.dk analytics | openlytics↝</title>
+        <style type="text/css">
+            html {
+                height: 100%;
+            }
+            body {
+                display: flex;
+                min-height: 100%;
+                height: 100%;
+                width: 100%;
+                align-items: stretch;
+                background: rgba(240, 240, 252);
+                margin: 0;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            }
+            .o-sidebar-menu {
+                background: white;
+                flex-basis: 400px;
+                flex-grow: 1;
+                flex-shrink: 1;
+            }
+            .o-sidebar-menu a {
+                transition: background 0.3s, color 0.3s;
+            }
+            .o-sidebar-menu a:hover {
+                background: rgba(0,0,0,0.06);
+                color: black;
+            }
+            .o-sidebar-menu a:active {
+                background: rgba(0,0,0,0.09);
+            }
+            .o-sidebar-logo {
+                color: inherit;
+                text-decoration: inherit;
+                font-size: 1.2em;
+                font-weight: 200;
+                display: block;
+                padding: 20px 15px;
+            }
+            .o-sidebar-logo strong {
+                font-weight: 800;
+            }
+            .o-settings-nav {
+                display: flex;
+                align-items: stretch;
+            }
+            .o-settings-nav a {
+                border: 1px solid rgba(0,0,0,0.2);
+                border-left: none;
+                display: inline-block;
+                padding: 15px;
+                color: rgba(0,0,0,0.5);
+                text-decoration: inherit;
+                flex-grow: 1;
+                flex-shrink: 0;
+                text-align: center;
+                font-size: 0.8em;
+                text-transform: uppercase;
+            }
+            .o-settings-nav a:last-child {
+                border-right: none;
+            }
+            .o-settings-nav i.fa {
+                font-size: 1.3em;
+                display: inline-block;
+                vertical-align: bottom;
+                width: 18px;
+                height: 17px;
+            }
+            .o-project-list-nav a {
+                display: block;
+                color: inherit;
+                text-decoration: inherit;
+                padding: 15px;
+                color: rgba(0,0,0,0.5);
+            }
+            a.o-project-list-nav--selected {
+                color: black;
+                background: rgba(0,0,0,0.04);
+            }
+            .o-project-list-nav-add-project:before {
+                content: '+';
+                display: inline-block;
+                padding: 0.09em 0.55em 0.25em;
+                border: 1px solid rgba(0,0,0,0.5);
+                border-radius: 100px;
+                margin-right: 10px;
+            }
+            .o-project-list-nav-title {
+                padding: 25px 15px 5px;
+                margin: 0;
+                font-size: 0.7em;
+                text-transform: uppercase;
+            }
+            .o-main-view {
+                box-sizing: border-box;
+                padding: 25px;
+                flex-grow: 20;
+                height: 100%;
+                overflow: auto;
+                position: relative;
+            }
+            .o-main-view-loading-overlay {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                background: rgb(240, 240, 252);
+                opacity: 1;
+                transition: opacity 0.8s;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 1.6em;
+                font-weight: 200;
+            }
+            .o-main-view-loading-overlay--fading {
+                opacity: 0;
+            }
+            .o-main-view-loading-overlay--hidden {
+                display: none;
+            }
+            .o-main-view-header h1 {
+                margin: 0;
+                font-weight: 200;
+                font-size: 2em;
+            }
+            .o-count-type-options-item {
+                display: inline-block;
+                background: white;
+                padding: 5px;
+                font-size: 0.9em;
+                margin: 0 5px;
+                color: inherit;
+                text-decoration: inherit;
+            }
+            .o-main-view-options {
+                display: flex;
+                margin: 20px 0;
+                font-size: 0.6em;
+                text-transform: uppercase;
+                font-weight: bold;
+            }
+            .o-main-view-option {
+                flex-basis: 125px;
+                margin-right: 20px;
+            }
+            .o-main-view-option-select {
+                display: block;
+                width: 100%;
+                text-transform: none;
+            }
+            .o-main-graph {
+                background: white;
+                height: 250px;
+                margin: 10px 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .o-main-graph:after {
+                content: "I can't render graphs yet.";
+                color: rgba(0,0,0,0.5)
+            }
+            .o-page-breakdown {
+                background: white;
+                width: 100%;
+                font-size: 0.9em;
+                margin-bottom: 100px;
+                border-collapse: collapse;
+            }
+            .o-page-breakdown:after {
+                content: ' ';
+                display: table-row;
+                height: 10px;
+            }
+            .o-page-breakdown th {
+                padding: 10px;
+                font-size: 0.8em;
+                text-transform: uppercase;
+            }
+            .o-page-breakdown tr {
+                color: rgba(0,0,0,0.5);
+                transition: background 0.3s, color 0.3s;
+            }
+            tr.o-page-breakdown-row--active {
+                background: rgba(0,0,0,0.05);
+                color: black;
+            }
+            .o-page-breakdown td {
+                padding: 2px 10px;
+            }
+            .o-table-cell-number {
+                text-align: center;
+            }
+            .o-table-cell-action {
+                text-align: center;
+            }
+        </style>
+        <script src="https://use.fontawesome.com/1ae1777486.js" defer></script>
+    </head>
+    <body>
+        <aside class="o-sidebar-menu">
+            <a href="/" class="o-sidebar-logo">
+                <strong>open</strong>lytics↝
+            </a>
+            <nav class="o-settings-nav">
+                <a href="/settings">
+                    <i class="fa fa-cog" aria-hidden="true"></i>
+                    Settings
+                </a>
+                <a href="/profile">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                    Profile
+                </a>
+                <a href="/teams">
+                    <i class="fa fa-users" aria-hidden="true"></i>
+                    Teams
+                </a>
+            </nav>
+            <nav class="o-project-list-nav">
+                <h1 class="o-project-list-nav-title">Projects</h1>
+                <a href="/project/deranged.dk" class="o-project-list-nav--selected">deranged.dk</a>
+                <a href="/project/maerkelex">Mærkelex</a>
+                <a href="/project/maerkelex-payment">Mærkelex Payment</a>
+                <a href="/add-project" class="o-project-list-nav-add-project">Add project</a>
+            </nav>
+        </aside>
+        <main class="o-main-view">
+            <div class="o-main-view-loading-overlay" v-bind:class="{ 'o-main-view-loading-overlay--fading': overlayState.isFading, 'o-main-view-loading-overlay--hidden': overlayState.isHidden }">Loading ...</div>
+            <section class="o-main-view-header">
+                <h1>{{ title }}</h1>
+            </section>
+            <openlytics-options :options="options" @change="handleOptionsChange"></openlytics-options>
+            <openlytics-graph></openlytics-graph>
+            <openlytics-pages-table :pages="pages" @checked-pages-changed="updateGraphWithNewPageSelection"></openlytics-pages-table>
+        </main>
+        <script src="https://unpkg.com/vue@2.4.2"></script>
+        <script>
+            Vue.component("openlytics-options", {
+                template: `
+                    <section class="o-main-view-options">
+                        <div class="o-main-view-option o-count-type-select">
+                            <label for="countTypeSelect">
+                                Count type
+                                <select v-model="countType" id="countTypeSelect" class="o-main-view-option-select" @change="handleChange">
+                                    <option value="views">Views</option>
+                                    <option value="sessions">Sessions</option>
+                                    <option value="users">Users</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="o-main-view-option o-date-range-select">
+                            <label for="dateRangeSelect">
+                                Date range
+                                <select v-model="dateRange" id="dateRangeSelect" class="o-main-view-option-select" @change="handleChange">
+                                    <option value="last-30-days">Last 30 days</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="o-main-view-option o-unit-size-select">
+                            <label for="unitSizeSelect">
+                                Unit
+                                <select v-model="unit" id="unitSizeSelect" class="o-main-view-option-select" @change="handleChange">
+                                    <option>days</option>
+                                    <option>weeks</option>
+                                    <option>months</option>
+                                </select>
+                            </label>
+                        </div>
+                    </section>`,
+                props: ["options"],
+                data: function() {
+                    return {
+                        countType: this.options.countType,
+                        dateRange: this.options.dateRange,
+                        unit: this.options.unit
+                    };
+                },
+                methods: {
+                    handleChange: function() {
+                        let options = {
+                            countType: this.countType,
+                            dateRange: this.dateRange,
+                            unit: this.unit
+                        };
+
+                        this.$emit("change", { options });
+
+                        //Save current options to local storage
+                        if(localStorage) {
+                            localStorage.setItem("openlytics-options", JSON.stringify(options))
+                        }
+                    }
+                }
+            });
+
+            Vue.component("openlytics-graph", {
+                template: `
+                    <section class="o-main-graph">
+
+                    </section>`
+            });
+
+            Vue.component("openlytics-pages-table", {
+                template: `
+                    <table class="o-page-breakdown">
+                        <thead>
+                            <tr>
+                                <th class="o-table-cell-action"><input type="checkbox" name="all-pages-checked" @click.prevent="toggleAllPages" v-model="allPagesChecked"></th>
+                                <th>Page</th>
+                                <th>Views</th>
+                                <th>Sessions</th>
+                                <th>Users</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="page in pages" :class="{ 'o-page-breakdown-row--active': checkedPage[page.id] }">
+                                <td class="o-table-cell-action"><input type="checkbox" :name="page.id" v-model="checkedPage[page.id]" @change="emitCheckedPages"></td>
+                                <td>{{ page.url }}</td>
+                                <td class="o-table-cell-number">{{ page.views }}</td>
+                                <td class="o-table-cell-number">{{ page.sessions }}</td>
+                                <td class="o-table-cell-number">{{ page.users }}</td>
+                            </tr>
+                        </tbody>
+                    </table>`,
+                props: ["pages"],
+                data: function() {
+                    return {
+                        checkedPage: this.pages.map(page => {
+                                                return { [page.id]: true };
+                                            })
+                                            .reduce((a,b) => {
+                                                Object.keys(a).forEach(key => b[key] = a[key]);
+                                                return b;
+                                            })
+                    };
+                },
+                computed: {
+                    allPagesChecked: function() {
+                        return Object.keys(this.checkedPage).every(key => this.checkedPage[key]);
+                    }
+                },
+                methods: {
+                    toggleAllPages: function() {
+                        let keys = Object.keys(this.checkedPage);
+                        let newVal = !keys.every(key => this.checkedPage[key]);
+                        keys.forEach(key => this.checkedPage[key] = newVal);
+                        this.emitCheckedPages();
+                    },
+                    emitCheckedPages: function() {
+                        let checkedPages = Object.keys(this.checkedPage).filter(key => this.checkedPage[key]);
+                        this.$emit("checked-pages-changed", { checkedPages });
+                    }
+                }
+            });
+
+            var mainView = new Vue({
+                el: ".o-main-view",
+                data: {
+                    id: "deranged.dk",
+                    title: "deranged.dk",
+                    options: tryLoadLocalStorageOptions() || {
+                        countType: "users",
+                        dateRange: "last-30-days",
+                        unit: "days"
+                    },
+                    pages: [
+                        { id: 0, url: "/", views: 34, sessions: 28, users: 24 },
+                        { id: 1, url: "/YOURdata/", views: 10, sessions: 10, users: 10 },
+                        { id: 2, url: "/how-we-think/", views: 8, sessions: 3, users: 3 }
+                    ],
+                    overlayState: {
+                        isFading: false,
+                        isHidden: false
+                    }
+                },
+                computed: {
+                    overlayVisible: function() {
+                        return !this.overlayState.isFading && !this.overlayState.isHidden;
+                    }
+                },
+                methods: {
+                    showOverlay: function() {
+                        setTimeout(() => {
+                            this.overlayState.isHidden = false;
+                            setTimeout(() => this.overlayState.isFading = false, 10);
+                        });
+                    },
+                    hideOverlay: function() {
+                        setTimeout(() => {
+                            this.overlayState.isFading = true;
+                            setTimeout(() => this.overlayState.isHidden = true, 1000);
+                        }, 0);
+                    },
+                    updateGraphWithNewPageSelection: function(e) {
+                        console.log("should update graph to show data with these pages", e.checkedPages);
+                    },
+                    handleOptionsChange: function(e) {
+                        console.log("should update graph and table with new options", e.options);
+                    }
+                },
+                mounted: function() {
+                    this.hideOverlay();
+                }
+            });
+
+            function tryLoadLocalStorageOptions() {
+                if(!localStorage) {
+                    return false;
+                }
+                let msg;
+                try {
+                    msg = localStorage.getItem("openlytics-options");
+                    return JSON.parse(msg);
+                }
+                catch(e) {
+                    console.error("Failed to load options from localstorage. Read " + msg + ". Will fall back.");
+                    return false;
+                }
+            }
+        </script>
+    </body>
+</html>

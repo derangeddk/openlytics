@@ -1,10 +1,10 @@
 {
   "name": "openlytics",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "bin/start",
+    "start": "node bin/start",
     "dev": "forever --watch bin/start | bunyan -o short"
   },
   "author": "",
